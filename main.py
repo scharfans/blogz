@@ -27,10 +27,22 @@ def index():
 
 @app.route('/blog', methods=['POST', 'GET'])
 def main_blog():
+    blog_id = ""
+    blog_id = int(request.args.get('id'))
 
-    blogs = Blog.query.all()
-    return render_template('blog_main.html',title="Build a Blog", 
+    if blog_id >= 0:
+        Blog_ind = Blog.query.get(blog_id)
+        blog_body = str(Blog_ind.body)
+        blog_title = str(Blog_ind.title)
+        return render_template('individual.html',blogtitle=blog_title,
+        blogbody=blog_body)
+
+    else:
+        blogs = Blog.query.all()
+        return render_template('blog_main.html',title="Build a Blog", 
         blogs=blogs)
+
+    
 
 @app.route('/newpost')
 def newpost():
@@ -54,7 +66,8 @@ def validation():
         new_blogentry = Blog(blog_title, blog_body)
         db.session.add(new_blogentry)
         db.session.commit()
-        return redirect ('/blog')
+        new_blogentry_id = Blog.query.get(Blog.id)
+        return redirect ('/blog?id=new_blogentry_id')
     
     else:
         return render_template('entry.html',title="Build a Blog",blogtitle=blog_title, blogtitle_error=blogtitle_error, blogbody=blog_body,blogbody_error=blogbody_error)
