@@ -7,14 +7,16 @@
         <p>
             <label>
                 Title for your new Blogpost:
-                <input type="text" name='blogtitle' />
+                <input type="text" name='blogtitle' value='{{blogtitle}}' />
             </label>
+            {{blogtitle_error}}
         </p>
         <p>
             <label>
                 Your new Blog:
                 <textarea name='blogbody'></textarea>
             </label>
+            {{blogbody_error}}
         </p>
         <p>    
             <input type="submit" value='Add Entry' />

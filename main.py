@@ -32,19 +32,32 @@ def main_blog():
     return render_template('blog_main.html',title="Build a Blog", 
         blogs=blogs)
 
-@app.route('/newpost', methods=['POST', 'GET'])
+@app.route('/newpost')
 def newpost():
-    if request.method == 'POST':
-        blog_title = request.form['blogtitle']
-        blog_body = request.form['blogbody']
+    return render_template('entry.html',title="Build a Blog")
+
+
+@app.route('/newpost', methods=['POST'])
+def validation():
+    blog_title = str(request.form['blogtitle'])
+    blog_body = str(request.form['blogbody'])
+    blogtitle_error = ''
+    blogbody_error = ''
+        
+    if len(blog_title) < 1:
+        blogtitle_error = 'Please fill in the title'
+    
+    if len(blog_body) < 1:
+        blogbody_error = 'Please fill in the body'
+    
+    if not blogtitle_error and not blogbody_error:
         new_blogentry = Blog(blog_title, blog_body)
         db.session.add(new_blogentry)
         db.session.commit()
-
         return redirect ('/blog')
     
     else:
-        return render_template('entry.html',title="Build a Blog")
+        return render_template('entry.html',title="Build a Blog",blogtitle=blog_title, blogtitle_error=blogtitle_error, blogbody=blog_body,blogbody_error=blogbody_error)
 
 if __name__ == '__main__':
     app.run()
