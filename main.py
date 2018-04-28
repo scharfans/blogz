@@ -19,18 +19,12 @@ class Blog(db.Model):
         self.body = body
 
 
-@app.route('/', methods=['POST', 'GET'])
-def index():
-    blogs = Blog.query.all()
-    return render_template('blog_main.html',title="Build a Blog", 
-        blogs=blogs)
-
 @app.route('/blog', methods=['POST', 'GET'])
 def main_blog():
     blog_id = ""
-    blog_id = int(request.args.get('id'))
-        
-    if blog_id >= 1:
+    
+    if (request.args.get('id')) != None:
+        blog_id = int(request.args.get('id'))
         Blog_ind = Blog.query.get(blog_id)
         blog_body = str(Blog_ind.body)
         blog_title = str(Blog_ind.title)
