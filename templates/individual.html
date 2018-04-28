@@ -1,11 +1,8 @@
-<!doctype html>
-<html>
-    <head>
-        <title>{{title}}</title>
-    </head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
+
     <h1>{{blogtitle}}</h1>
     {{blogbody}}
 
-</body>
-</html>
+{% endblock %}
