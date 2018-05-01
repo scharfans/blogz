@@ -17,6 +17,7 @@
                 <a href="/blog?id={{blog.id}}">{{blog.title}}</a>
                 <p>{{blog.body}}</p>
                 <input type="hidden" name="blog_id" value="{{blog.id}}"/>
+                <a href="/blog?user={{blog.owner}}">written by {{blog.owner}}</a>
             </li>
             {% endfor %}
         </ul>

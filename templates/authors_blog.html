@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+    
+    <h1>{{author}}'s blogentries:</h1>
+    
+
+    <hr />
+
+    {% if userblogs|length == 0 %}
+    <p>No blogentry for this author yet</p>
+    {% else %}
+
+        <ul>
+            {% for blog in userblogs %}
+            <li>
+                <p>{{blog.title}}</p>
+                <p>{{blog.body}}</p>
+            </li>
+            {% endfor %}
+        </ul>
+
+    {% endif %}
+
+
+{% endblock %}

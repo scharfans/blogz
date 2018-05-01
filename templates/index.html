@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    
+    <h1>Blog Authors</h1>
+    
+
+    {% if authors|length == 0 %}
+    <p>No Author yet</p>
+    {% else %}
+
+        <ul>
+            {% for user in authors %}
+            <li>
+                <a href="/blog?user={{user.id}}">{{user.username}}</a>
+                <input type="hidden" name="user_id" value="{{user.id}}"/>
+                
+            </li>
+            {% endfor %}
+        </ul>
+
+    {% endif %}
+
+
+{% endblock %}

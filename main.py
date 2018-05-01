@@ -16,7 +16,7 @@ class Blog(db.Model):
     body = db.Column(db.Text)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, body):
+    def __init__(self, title, body,owner):
         self.title = title
         self.body = body
         self.owner = owner
@@ -27,9 +27,15 @@ class User(db.Model):
     password = db.Column(db.String(120))
     blogs = db.relationship('Blog', backref='owner')
 
-    def __init__(self, email, password):
+    def __init__(self, username, password):
         self.username = username
         self.password = password
+
+@app.before_request
+def require_login():
+    allowed_routes = ['login','signup','main_blog','index']
+    if request.endpoint not in allowed_routes and 'username' not in session:
+        return redirect ('/login')
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -42,7 +48,7 @@ def login():
             return redirect ('/newpost')
         else:
             flash('User password is incorrect, or username does not exist', 'error')
-
+    return render_template('/login.html')
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
@@ -60,20 +66,39 @@ def signup():
             return redirect ('/newpost')
         else:
             flash('Username already exists', 'error')
+    return render_template('/signup.html')
 
+@app.route('/logout')
+def Logout():
+    del session['username']
+    return redirect ('/blog')
 
+@app.route('/')
+def index():
+    authors = User.query.all()
+    return render_template ('index.html', authors=authors)
 
 @app.route('/blog', methods=['POST', 'GET'])
 def main_blog():
     blog_id = ""
+    
+    if (request.args.get('user')) != None:
+        userblogs = []
+        
+        user_id = int(request.args.get('user'))
+        author = str(User.query.filter_by(id=user_id).first().username)
+        userblogs = Blog.query.filter_by(owner_id=user_id).all()
+        return render_template('authors_blog.html',userblogs=userblogs, author=author)
     
     if (request.args.get('id')) != None:
         blog_id = int(request.args.get('id'))
         Blog_ind = Blog.query.get(blog_id)
         blog_body = str(Blog_ind.body)
         blog_title = str(Blog_ind.title)
+        blog_author = str(User.query.filter_by(id=blog_id).first().username)
+        user_id = str(User.query.filter_by(id=blog_id).first().id)
         return render_template('individual.html',blogtitle=blog_title,
-        blogbody=blog_body)
+        blogbody=blog_body,blogauthor=blog_author)
 
     else:
         blogs = Blog.query.all()
@@ -93,7 +118,7 @@ def validation():
     blog_body = str(request.form['blogbody'])
     blogtitle_error = ''
     blogbody_error = ''
-    owner = User.query.filter_by(username=session['username'.first])
+    owner = User.query.filter_by(username=session['username']).first()
         
     if len(blog_title) < 1:
         blogtitle_error = 'Please fill in the title'
