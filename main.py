@@ -15,7 +15,7 @@ class Blog(db.Model):
     title = db.Column(db.String(500))
     body = db.Column(db.Text)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
+   
     def __init__(self, title, body,owner):
         self.title = title
         self.body = body
@@ -59,11 +59,20 @@ def signup():
 
         existing_user = User.query.filter_by(username=username).first()
         if not existing_user:
-            new_user = User(username, password)
-            db.session.add(new_user)
-            db.session.commit()
-            session['username'] = username
-            return redirect ('/newpost')
+            if len(username) < 3:
+                flash('Not valid username', 'error')
+    
+            if len(password) < 3:
+                flash('Not valid password', 'error')
+
+            if len(verify) < 1 or password != verify:
+                 flash('password not verified', 'error')
+            else:
+                new_user = User(username, password)
+                db.session.add(new_user)
+                db.session.commit()
+                session['username'] = username
+                return redirect ('/newpost')
         else:
             flash('Username already exists', 'error')
     return render_template('/signup.html')
@@ -93,15 +102,17 @@ def main_blog():
     if (request.args.get('id')) != None:
         blog_id = int(request.args.get('id'))
         Blog_ind = Blog.query.get(blog_id)
+        user_id = int(Blog_ind.owner_id)
         blog_body = str(Blog_ind.body)
         blog_title = str(Blog_ind.title)
-        blog_author = str(User.query.filter_by(id=blog_id).first().username)
-        user_id = str(User.query.filter_by(id=blog_id).first().id)
+        blog_author = str(User.query.filter_by(id=Blog_ind.owner_id).first().username)
         return render_template('individual.html',blogtitle=blog_title,
-        blogbody=blog_body,blogauthor=blog_author)
+        blogbody=blog_body,blogauthor=blog_author,userid=user_id)
 
     else:
         blogs = Blog.query.all()
+
+        
         return render_template('blog_main.html',title="Build a Blog", 
         blogs=blogs)
 

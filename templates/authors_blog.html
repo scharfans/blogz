@@ -14,8 +14,9 @@
         <ul>
             {% for blog in userblogs %}
             <li>
-                <p>{{blog.title}}</p>
+                <a href="/blog?id={{blog.id}}">{{blog.title}}</a>
                 <p>{{blog.body}}</p>
+                <input type="hidden" name="blog_id" value="{{blog.id}}"/>
             </li>
             {% endfor %}
         </ul>
